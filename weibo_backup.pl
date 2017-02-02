@@ -1,6 +1,8 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
 
-our ($UID, $COOKIE) = @ARGV;
+our ( $UID, $COOKIE ) = @ARGV;
 
 my %head = (
     'User-Agent' =>
@@ -11,15 +13,15 @@ my %head = (
     'Connection'      => 'keep-alive',
     'Cookie'          => $COOKIE,
 );
-my $HEAD = join( " ", map { qq[-H "$_: $head{$_}"] } keys(%head) );
+our $HEAD = join( " ", map { qq[-H "$_: $head{$_}"] } keys(%head) );
 
 backup_weibo( \&profile_num_url,    \&profile_page_url,    'profile' );
 backup_weibo( \&at_num_url,         \&at_page_url,         'at/weibo' );
 backup_weibo( \&at_comment_num_url, \&at_comment_page_url, 'at/comment' );
 backup_weibo( \&comment_num_url,    \&comment_page_url,    'comment/receive' );
 backup_weibo( \&comment_send_num_url, \&comment_send_page_url, 'comment/send' );
-backup_weibo( \&attitude_num_url,   \&attitude_page_url,   'attitude' );
-backup_weibo( \&fav_num_url,        \&fav_page_url,        'fav' );
+backup_weibo( \&attitude_num_url,     \&attitude_page_url,     'attitude' );
+backup_weibo( \&fav_num_url,          \&fav_page_url,          'fav' );
 
 sub backup_weibo {
     my ( $num_sub, $page_sub, $dir ) = @_;
@@ -30,19 +32,21 @@ sub backup_weibo {
     my $last_f = 0;
     for my $i ( 1 .. $max_n ) {
         last if ( $last_f >= 1 );
+
         #last if ( $i > 5 );
         my $j     = $max_n + 1 - $i;
         my $fname = "$dir/$j.html";
         $last_f++ if ( -f $fname );
         my $iu = $page_sub->($i);
         get_weibo_page( $iu, $fname );
-        sleep 3;
+        sleep 5;
     }
 }
 
 sub get_weibo_page_num {
     my ($u) = @_;
     my $c = get_weibo_page($u);
+
     #print $c, "\n";
     my ($n) = $c =~ m#<input name="mp".+?value="(\d+)"#s;
     return $n;
