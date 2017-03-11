@@ -36,7 +36,7 @@ sub backup_weibo {
         #last if ( $i > 5 );
         my $j     = $max_n + 1 - $i;
         my $fname = "$dir/$j.html";
-        $last_f++ if ( -f $fname );
+        $last_f++ if ( -f $fname and -s $fname );
         my $iu = $page_sub->($i);
         get_weibo_page( $iu, $fname );
         sleep 5;

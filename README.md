@@ -1,6 +1,6 @@
 # weibo_backup
 
-weibo backup
+weibo backup  自身微博备份
 
 ## install
 
@@ -16,11 +16,11 @@ perl weibo_backup.pl [UID] [COOKIE]
 
     .
     ├── at @
-    │   ├── comment
-    │   └── weibo
+    │   ├── comment 评论@
+    │   └── weibo 微博@
     ├── attitude 点赞
     ├── comment  评论
-    │   ├── receive
-    │   └── send
+    │   ├── receive 发出
+    │   └── send 收到
     ├── fav 收藏
     ├── profile 微博
