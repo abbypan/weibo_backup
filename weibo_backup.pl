@@ -4,6 +4,13 @@ use warnings;
 
 our ( $UID, $COOKIE ) = @ARGV;
 
+if(-f $COOKIE){
+    #firefox sqlite3 
+    my $sqlite3_cookie = `sqlite3 "$COOKIE" "select * from moz_cookies where baseDomain='weibo.cn'"`;
+    my @segment = map { my @c=split /\|/; "$c[3]=$c[4]"  } (split /\n/, $sqlite3_cookie);
+    $COOKIE = join("; ", @segment);
+}
+
 my %head = (
     'User-Agent' =>
       'Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0',
