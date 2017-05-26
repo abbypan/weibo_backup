@@ -63,7 +63,7 @@ sub get_weibo_page {
     my ( $url, $fname ) = @_;
 
     print "URL: $url\n";
-    my $cmd = qq[curl -s $HEAD "$url"];
+    my $cmd = qq[curl -L -s $HEAD "$url"];
     $cmd .= qq[ -o "$fname"] if ($fname);
 
     #print $cmd, "\n";
@@ -72,64 +72,64 @@ sub get_weibo_page {
 }
 
 sub fav_num_url {
-    my $u = "http://weibo.cn/fav/";
+    my $u = "https://weibo.cn/fav/";
 }
 
 sub fav_page_url {
     my ($n) = @_;
-    my $u = "http://weibo.cn/fav/?page=$n";
+    my $u = "https://weibo.cn/fav/?page=$n";
 }
 
 sub attitude_num_url {
-    my $u = "http://weibo.cn/msg/attitude?rl=1";
+    my $u = "https://weibo.cn/msg/attitude?rl=1";
 }
 
 sub attitude_page_url {
     my ($n) = @_;
-    my $u = "http://weibo.cn/msg/attitude?rl=1&page=$n";
+    my $u = "https://weibo.cn/msg/attitude?rl=1&page=$n";
 }
 
 sub comment_send_num_url {
-    my $u = "http://weibo.cn/msg/comment/send?rl=1";
+    my $u = "https://weibo.cn/msg/comment/send?rl=1";
 }
 
 sub comment_send_page_url {
     my ($n) = @_;
-    my $u = "http://weibo.cn/msg/comment/send?rl=1&page=$n";
+    my $u = "https://weibo.cn/msg/comment/send?rl=1&page=$n";
 }
 
 sub comment_num_url {
-    my $u = "http://weibo.cn/msg/comment/receive?rl=1";
+    my $u = "https://weibo.cn/msg/comment/receive?rl=1";
 }
 
 sub comment_page_url {
     my ($n) = @_;
-    my $u = "http://weibo.cn/msg/comment/receive?rl=1&page=$n";
+    my $u = "https://weibo.cn/msg/comment/receive?rl=1&page=$n";
 }
 
 sub at_num_url {
-    my $u = "http://weibo.cn/at/weibo?rl=1";
+    my $u = "https://weibo.cn/at/weibo?rl=1";
 }
 
 sub at_page_url {
     my ($n) = @_;
-    my $u = "http://weibo.cn/at/weibo?rl=1&page=$n";
+    my $u = "https://weibo.cn/at/weibo?rl=1&page=$n";
 }
 
 sub at_comment_num_url {
-    my $u = "http://weibo.cn/at/comment";
+    my $u = "https://weibo.cn/at/comment";
 }
 
 sub at_comment_page_url {
     my ($n) = @_;
-    my $u = "http://weibo.cn/at/comment?page=$n";
+    my $u = "https://weibo.cn/at/comment?page=$n";
 }
 
 sub profile_num_url {
-    my $u = "http://weibo.cn/$UID/profile";
+    my $u = "https://weibo.cn/$UID/profile";
 }
 
 sub profile_page_url {
     my ($n) = @_;
-    my $u = "http://weibo.cn/$UID/profile?page=$n";
+    my $u = "https://weibo.cn/$UID/profile?page=$n";
 }
