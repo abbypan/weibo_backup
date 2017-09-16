@@ -4,26 +4,31 @@ use warnings;
 
 my ( $uid, $cookie ) = @ARGV;
 
-our $HEAD = init_head( $cookie );
+our $GET_WEIBO_SUB = gen_get_url_sub( $cookie, 'weibo.cn' );
+
+our $BASE_URL = "https://weibo.cn";
 
 my %save_info = (
-  'fav'             => "https://weibo.cn/fav/",
-  'attitude'        => "https://weibo.cn/msg/attitude?rl=1",
-  'comment/send'    => "https://weibo.cn/msg/comment/send?rl=1",
-  'comment/receive' => "https://weibo.cn/msg/comment/receive?rl=1",
-  'at/weibo'        => "https://weibo.cn/at/weibo?rl=1",
-  'at/comment'      => "https://weibo.cn/at/comment",
-  'profile'         => "https://weibo.cn/$uid/profile",
+  'fav'             => "/fav/",
+  'attitude'        => "/msg/attitude?rl=1",
+  'comment/send'    => "/msg/comment/send?rl=1",
+  'comment/receive' => "/msg/comment/receive?rl=1",
+  'at/weibo'        => "/at/weibo?rl=1",
+  'at/comment'      => "/at/comment",
+  'profile'         => "/$uid/profile",
 );
 
 while ( my ( $dir, $page_num_url ) = each %save_info ) {
-  backup_weibo( $dir, $page_num_url );
+  backup_weibo( $dir, "$BASE_URL$page_num_url" );
 }
+
+#--
 
 sub backup_weibo {
   my ( $dir, $page_num_url ) = @_;
 
-  my $max_n = get_weibo_page_num( $page_num_url );
+  my $c     = $GET_WEIBO_SUB->( $page_num_url );
+  my $max_n = extract_weibo_page_num( $c );
 
   my $last_f = 0;
   for my $i ( 1 .. $max_n ) {
@@ -33,44 +38,47 @@ sub backup_weibo {
     my $j     = $max_n + 1 - $i;
     my $fname = "$dir/$j.html";
     $last_f++ if ( -f $fname and -s $fname );
-    my $iu = get_weibo_page_url( $page_num_url, $i );
-    get_weibo_page( $iu, $fname );
+    my $iu = gen_weibo_page_url( $page_num_url, $i );
+    $GET_WEIBO_SUB->( $iu, $fname );
     sleep 5;
   }
 } ## end sub backup_weibo
 
-sub get_weibo_page_num {
-  my ( $u ) = @_;
-  my $c = get_weibo_page( $u );
-
-  #print $c, "\n";
+sub extract_weibo_page_num {
+  my ( $c ) = @_;
   my ( $n ) = $c =~ m#<input name="mp".+?value="(\d+)"#s;
   return $n;
 }
 
-sub get_weibo_page_url {
+sub gen_weibo_page_url {
   my ( $page_num_url, $n ) = @_;
   my $conn = $page_num_url =~ /\?/ ? '&' : '?';
   return "$page_num_url${conn}page=$n";
 }
 
-sub get_weibo_page {
-  my ( $url, $fname ) = @_;
+#--
 
-  print "URL: $url\n";
-  my $cmd = qq[curl -L -s $HEAD "$url"];
-  $cmd .= qq[ -o "$fname"] if ( $fname );
+sub gen_get_url_sub {
+  my ( $cookie, $dom ) = @_;
 
-  #print $cmd, "\n";
-  my $c = `$cmd`;
-  return $c;
-}
+  $cookie = init_cookie( $cookie, $dom );
+  my $head = init_head( $cookie );
+
+  return sub {
+    my ( $url, $fname ) = @_;
+
+    print "URL: $url\n";
+    my $cmd = qq[curl -L -s $head "$url"];
+    $cmd .= qq[ -o "$fname"] if ( $fname );
+
+    #print $cmd, "\n";
+    my $c = `$cmd`;
+    return $c;
+    }
+} ## end sub gen_get_url_sub
 
 sub init_head {
   my ( $cookie ) = @_;
-
-  $cookie = init_cookie( $cookie );
-
   my %head = (
     'User-Agent'      => 'Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0',
     'Accept'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -83,10 +91,10 @@ sub init_head {
 }
 
 sub init_cookie {
-  my ( $cookie ) = @_;
+  my ( $cookie, $dom ) = @_;
 
   if ( -f $cookie ) {                  #firefox sqlite3
-    my $sqlite3_cookie = `sqlite3 "$cookie" "select * from moz_cookies where baseDomain='weibo.cn'"`;
+    my $sqlite3_cookie = `sqlite3 "$cookie" "select * from moz_cookies where baseDomain='$dom'"`;
     my @segment = map { my @c = split /\|/; "$c[3]=$c[4]" } ( split /\n/, $sqlite3_cookie );
     $cookie = join( "; ", @segment );
   }
