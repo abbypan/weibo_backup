@@ -5,7 +5,6 @@ use warnings;
 my ( $uid, $cookie ) = @ARGV;
 
 our $GET_WEIBO_SUB = gen_get_url_sub( $cookie, 'weibo.cn' );
-
 our $BASE_URL = "https://weibo.cn";
 
 my %save_info = (
@@ -19,15 +18,15 @@ my %save_info = (
 );
 
 while ( my ( $dir, $page_num_url ) = each %save_info ) {
-  backup_weibo( $dir, "$BASE_URL$page_num_url" );
+  backup_weibo( $GET_WEIBO_SUB, $dir, "$BASE_URL$page_num_url" );
 }
 
 #--
 
 sub backup_weibo {
-  my ( $dir, $page_num_url ) = @_;
+  my ( $weibo_sub, $dir, $page_num_url ) = @_;
 
-  my $c     = $GET_WEIBO_SUB->( $page_num_url );
+  my $c     = $weibo_sub->( $page_num_url );
   my $max_n = extract_weibo_page_num( $c );
 
   my $last_f = 0;
@@ -39,7 +38,7 @@ sub backup_weibo {
     my $fname = "$dir/$j.html";
     $last_f++ if ( -f $fname and -s $fname );
     my $iu = gen_weibo_page_url( $page_num_url, $i );
-    $GET_WEIBO_SUB->( $iu, $fname );
+    $weibo_sub->( $iu, $fname );
     sleep 5;
   }
 } ## end sub backup_weibo
@@ -94,8 +93,8 @@ sub init_cookie {
   my ( $cookie, $dom ) = @_;
 
   if ( -f $cookie ) {                  #firefox sqlite3
-    my $sqlite3_cookie = `sqlite3 "$cookie" "select * from moz_cookies where baseDomain='$dom'"`;
-    my @segment = map { my @c = split /\|/; "$c[3]=$c[4]" } ( split /\n/, $sqlite3_cookie );
+    my $sqlite3_cookie = `sqlite3 "$cookie" "select name,value from moz_cookies where baseDomain='$dom'"`;
+    my @segment = map { my @c = split /\|/; "$c[0]=$c[1]" } ( split /\n/, $sqlite3_cookie );
     $cookie = join( "; ", @segment );
   }
 
