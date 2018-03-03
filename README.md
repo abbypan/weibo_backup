@@ -4,7 +4,7 @@ weibo backup  自身微博备份
 
 ## install
 
-curl, firefox, sqlite3
+perl, curl, firefox, sqlite3
 
 ## usage
 
