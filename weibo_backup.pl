@@ -15,6 +15,8 @@ my %save_info = (
   'at/weibo'        => "/at/weibo?rl=1",
   'at/comment'      => "/at/comment",
   'profile'         => "/$uid/profile",
+  'follow'         => "/$uid/follow",
+  'fans'         => "/$uid/fans",
 );
 
 while ( my ( $dir, $page_num_url ) = each %save_info ) {

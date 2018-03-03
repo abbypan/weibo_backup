@@ -33,5 +33,8 @@ perl weibo_backup.pl [UID] [COOKIE]
     ├── comment  评论
     │   ├── receive 发出
     │   └── send 收到
+    ├── fans 粉丝
     ├── fav 收藏
+    ├── follow 关注
     ├── profile 微博
+    
