@@ -28,14 +28,15 @@ while ( my ( $dir, $page_num_url ) = each %save_info ) {
 sub backup_weibo {
   my ( $weibo_sub, $dir, $page_num_url ) = @_;
 
+  my $thr = $dir=~/^(follow|fans)$/ ? 10 : 1;
+
   my $c     = $weibo_sub->( $page_num_url );
   my $max_n = extract_weibo_page_num( $c );
 
   my $last_f = 0;
   for my $i ( 1 .. $max_n ) {
-    last if ( $last_f >= 1 );
+    last if ( $last_f >= $thr );
 
-    #last if ( $i > 5 );
     my $j     = $max_n + 1 - $i;
     my $fname = "$dir/$j.html";
     $last_f++ if ( -f $fname and -s $fname );
