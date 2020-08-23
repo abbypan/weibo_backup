@@ -4,7 +4,7 @@ use warnings;
 
 my ( $uid, $cookie ) = @ARGV;
 
-our $GET_WEIBO_SUB = gen_get_url_sub( $cookie, 'weibo.cn' );
+our $GET_WEIBO_SUB = gen_get_url_sub( $cookie, '.weibo.cn' );
 our $BASE_URL = "https://weibo.cn";
 
 my %save_info = (
@@ -96,7 +96,7 @@ sub init_cookie {
   my ( $cookie, $dom ) = @_;
 
   if ( -f $cookie ) {                  #firefox sqlite3
-    my $sqlite3_cookie = `sqlite3 "$cookie" "select name,value from moz_cookies where baseDomain='$dom'"`;
+    my $sqlite3_cookie = `sqlite3 "$cookie" "select name,value from moz_cookies where host='$dom'"`;
     my @segment = map { my @c = split /\|/; "$c[0]=$c[1]" } ( split /\n/, $sqlite3_cookie );
     $cookie = join( "; ", @segment );
   }
